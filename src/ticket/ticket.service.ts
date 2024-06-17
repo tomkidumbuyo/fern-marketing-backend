@@ -3,6 +3,7 @@ import {
   BankAccountEntity,
   TicketApprovalEntity,
   UserEntity,
+  UserTypeEnum,
 } from '@database/entities';
 import {
   TicketEntity,
@@ -101,24 +102,104 @@ export class TicketService {
   }
 
   async getTickets(user: UserEntity) {
-    return this.ticketRepository.find({
-      relations: [
-        'bankAccount',
-        'createdBy',
-        'items',
-        'items.budgetItem',
-        'items.budgetCategory',
-        'project',
-        'project.client',
-        'budget',
-        'financeApproval',
-        'headOfOperationsApproval',
-        'managingDirectorApproval',
-        'financeApproval.approvedBy',
-        'headOfOperationsApproval.approvedBy',
-        'managingDirectorApproval.approvedBy',
-      ],
-    });
+
+    if (user.userType == UserTypeEnum.ADMIN) {
+      return this.ticketRepository.find({
+        relations: [
+          'bankAccount',
+          'createdBy',
+          'items',
+          'items.budgetItem',
+          'items.budgetCategory',
+          'project',
+          'project.client',
+          'budget',
+          'financeApproval',
+          'headOfOperationsApproval',
+          'managingDirectorApproval',
+          'financeApproval.approvedBy',
+          'headOfOperationsApproval.approvedBy',
+          'managingDirectorApproval.approvedBy',
+        ],
+      });
+    } else if (user.userType == UserTypeEnum.OPERATION_MANAGER) {
+      return this.ticketRepository.find({
+        where: { project: { operationManager: { id: user.id } } },
+        relations: [
+          'bankAccount',
+          'createdBy',
+          'items',
+          'items.budgetItem',
+          'items.budgetCategory',
+          'project',
+          'project.client',
+          'budget',
+          'financeApproval',
+          'headOfOperationsApproval',
+          'managingDirectorApproval',
+          'financeApproval.approvedBy',
+          'headOfOperationsApproval.approvedBy',
+          'managingDirectorApproval.approvedBy',
+        ],
+      });
+    } else if (user.userType == UserTypeEnum.MANAGING_DIRECTOR) {
+      return this.ticketRepository.find({
+        relations: [
+          'bankAccount',
+          'createdBy',
+          'items',
+          'items.budgetItem',
+          'items.budgetCategory',
+          'project',
+          'project.client',
+          'budget',
+          'financeApproval',
+          'headOfOperationsApproval',
+          'managingDirectorApproval',
+          'financeApproval.approvedBy',
+          'headOfOperationsApproval.approvedBy',
+          'managingDirectorApproval.approvedBy',
+        ],
+      });
+    } else if (user.userType == UserTypeEnum.HEAD_OPERATION_MANAGER) {
+      return this.ticketRepository.find({
+        relations: [
+          'bankAccount',
+          'createdBy',
+          'items',
+          'items.budgetItem',
+          'items.budgetCategory',
+          'project',
+          'project.client',
+          'budget',
+          'financeApproval',
+          'headOfOperationsApproval',
+          'managingDirectorApproval',
+          'financeApproval.approvedBy',
+          'headOfOperationsApproval.approvedBy',
+          'managingDirectorApproval.approvedBy',
+        ],
+      });
+    } else if (user.userType == UserTypeEnum.FINANCE) {
+      return this.ticketRepository.find({
+        relations: [
+          'bankAccount',
+          'createdBy',
+          'items',
+          'items.budgetItem',
+          'items.budgetCategory',
+          'project',
+          'project.client',
+          'budget',
+          'financeApproval',
+          'headOfOperationsApproval',
+          'managingDirectorApproval',
+          'financeApproval.approvedBy',
+          'headOfOperationsApproval.approvedBy',
+          'managingDirectorApproval.approvedBy',
+        ],
+      });
+    }
   }
 
   async getTicketById(ticketId: string) {
@@ -247,19 +328,21 @@ export class TicketService {
     const ticket = await this.ticketRepository.findOne({
       where: { id: ticketId },
     });
-    if (ticket.status !== TicketStatusEnum.PAID) {
+    if (ticket && ticket.status !== TicketStatusEnum.PAID) {
+      throw new errors.ErrorUpdatingTicketAsUnpaid();
     }
     ticket.status = TicketStatusEnum.APPROVED;
-    this.ticketItemRepository.save(ticket);
+    return this.ticketRepository.save(ticket);
   }
 
   async markTicketAsPaid(ticketId: any, user: UserEntity) {
     const ticket = await this.ticketRepository.findOne({
       where: { id: ticketId },
     });
-    if (ticket.status !== TicketStatusEnum.APPROVED) {
+    if (ticket && ticket.status !== TicketStatusEnum.APPROVED) {
+      throw new errors.ErrorUpdatingTicketAsPaid();
     }
     ticket.status = TicketStatusEnum.PAID;
-    this.ticketItemRepository.save(ticket);
+    return this.ticketRepository.save(ticket);
   }
 }

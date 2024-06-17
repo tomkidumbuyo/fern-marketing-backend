@@ -35,6 +35,7 @@ export class BudgetService {
     return this.budgetRepository.findOne({
       where: { id: budgetId },
       relations: [
+        'tickets',
         'categories',
         'categories.items',
         'createdBy',
@@ -161,7 +162,13 @@ export class BudgetService {
   async getProjectBudget(projectId: string) {
     return this.budgetRepository.find({
       where: { project: { id: projectId } },
-      relations: ['categories', 'categories.items', 'createdBy'],
+      relations: [
+        'categories',
+        'categories.items',
+        'createdBy',
+        'tickets',
+        'tickets.items',
+      ],
     });
   }
 

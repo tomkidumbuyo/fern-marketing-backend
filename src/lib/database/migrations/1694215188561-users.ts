@@ -9,7 +9,7 @@ export class Users1694215188561 implements MigrationInterface {
             password varchar(255) NOT NULL,
             first_name varchar(255) NOT NULL,
             last_name varchar(255) NOT NULL,
-            phone_number varchar(20) NOT NULL,
+            phone_number varchar(20),
             user_type varchar(10) NOT NULL DEFAULT 'AGENT',
             created_at timestamp NOT NULL DEFAULT now(),
             updated_at timestamp NOT NULL DEFAULT now(),

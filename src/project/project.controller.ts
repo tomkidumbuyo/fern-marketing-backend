@@ -23,7 +23,7 @@ export class ProjectController {
 
   @Get('getAllProjects')
   getAllProjects(@Request() req) {
-    return this.projectService.getAllProjects();
+    return this.projectService.getAllProjects(req.user);
   }
 
   @Get('getActiveProjects')

@@ -1,3 +1,4 @@
+import { UserService } from 'src/users/user.service';
 import { LoginDto, RegisterDto } from '@database/dtos/auth.dto';
 import {
   Body,
@@ -14,7 +15,10 @@ import { JwtAuthGuard } from './jwt-auth.guard';
 @ApiTags('auth')
 @Controller('auth')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private userService: UserService,
+  ) {}
 
   @Post('login')
   async login(@Request() req, @Body() loginInput: LoginDto) {
@@ -30,5 +34,10 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   isAuthenticated(@Request() req) {
     return true;
+  }
+
+  @Get('checkIfAnyUsersExist')
+  checkIfAnyUsersExist(@Request() req) {
+    return this.userService.checkIfAnyUsersExist();
   }
 }

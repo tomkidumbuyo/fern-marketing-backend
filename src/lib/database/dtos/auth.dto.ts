@@ -30,10 +30,8 @@ export class RegisterDto {
   @ApiProperty()
   lastName: string;
 
-  @IsString()
-  @IsNotEmpty()
   @ApiProperty()
-  phoneNumber: string;
+  phoneNumber?: string;
 
   @IsEnum(UserTypeEnum)
   @IsNotEmpty()

@@ -38,6 +38,8 @@ export class UserController {
     return this.userService.getAllUsers();
   }
 
+  
+
   @Get('getOperationManagers')
   getOperationManagers(@Request() req) {
     return this.userService.getOperationManagers();

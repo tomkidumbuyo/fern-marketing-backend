@@ -3,7 +3,11 @@ import { ClientService } from './../client/client.service';
 import { CreateProjectDto } from '@database/dtos/project.dto';
 import { Injectable } from '@nestjs/common';
 import { UserRepository } from '@database/repositories';
-import { UserEntity, projectStatusEnum } from '@database/entities';
+import {
+  UserEntity,
+  UserTypeEnum,
+  projectStatusEnum,
+} from '@database/entities';
 
 @Injectable()
 export class ProjectService {
@@ -33,11 +37,41 @@ export class ProjectService {
   getProjectById(projectId: string) {
     return this.projectRepository.findOne({
       where: { id: projectId },
-      relations: ['client', 'operationManager', 'createdBy'],
+      relations: [
+        'client',
+        'operationManager',
+        'createdBy',
+        'tickets',
+        'tickets.budget',
+        'tickets.items',
+        'tickets.createdBy',
+      ],
     });
   }
 
-  getAllProjects() {
+  getAllProjects(user: UserEntity) {
+    if (user.userType == UserTypeEnum.ADMIN) {
+      return this.projectRepository.find({
+        relations: ['client', 'operationManager', 'createdBy'],
+      });
+    } else if (user.userType == UserTypeEnum.OPERATION_MANAGER) {
+      return this.projectRepository.find({
+        where: { operationManager: { id: user.id } },
+        relations: ['client', 'operationManager', 'createdBy'],
+      });
+    } else if (user.userType == UserTypeEnum.MANAGING_DIRECTOR) {
+      return this.projectRepository.find({
+        relations: ['client', 'operationManager', 'createdBy'],
+      });
+    } else if (user.userType == UserTypeEnum.HEAD_OPERATION_MANAGER) {
+      return this.projectRepository.find({
+        relations: ['client', 'operationManager', 'createdBy'],
+      });
+    } else if (user.userType == UserTypeEnum.FINANCE) {
+      return this.projectRepository.find({
+        relations: ['client', 'operationManager', 'createdBy'],
+      });
+    }
     return this.projectRepository.find({
       relations: ['client', 'operationManager', 'createdBy'],
     });
@@ -47,6 +81,7 @@ export class ProjectService {
     return this.projectRepository.find({
       where: { status: projectStatusEnum.STARTED },
       relations: [
+        'tickets',
         'client',
         'operationManager',
         'createdBy',

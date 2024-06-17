@@ -20,7 +20,7 @@ export enum GenderEnum {
 
 @Entity('users')
 export class UserEntity extends BaseEntity {
-  @Column({ name: 'email' })
+  @Column({ name: 'email', unique: true })
   email: string;
 
   @Column({ name: 'first_name' })
@@ -29,7 +29,7 @@ export class UserEntity extends BaseEntity {
   @Column({ name: 'last_name' })
   lastName: string;
 
-  @Column({ name: 'phone_number' })
+  @Column({ name: 'phone_number', nullable: true })
   phoneNumber: string;
 
   @Column({ name: 'user_type' })
